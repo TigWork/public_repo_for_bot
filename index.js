@@ -3,29 +3,58 @@ const { Telegraf, Markup } = require("telegraf");
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
-const PASS_THRESHOLD = 8;
+const PASS_THRESHOLD = 7;
 
-const QUESTIONS = [
-    { text: "*Question 1:*\n14 boys are participating in a summer camp\\.\n\n*Details:*\n\\- 4 of them went with their 3 brothers each\n\\- 6 of them went with their 2 brothers each\n\\- 2 of them went with their 1 brother each\n\\- 2 of them have no brothers in the camp\n\n*How many families do the boys come from\\?*", options: ["14", "6", "4", "8"], correct: 1 },
-    
-    { text: "*Question 2:*\nOn the blackboard, 50 consecutive natural numbers are written, and it took exactly 110 digits to write them\\.\n\n*Which of the following sets of numbers could be written on the blackboard\\?*", options: ["50 - 100", "55 – 102", "55 - 101", "60–109"], correct: 3 },
-    
-    { text: "*Question 3:*\nVahagn, while traveling, reached a magical bridge\\. The wizard who built the bridge said:\n\"Each time you cross the bridge, the number of coins you have will double, but after crossing, you must pay me 40 coins\\.\"\nVahagn decides to cross the bridge repeatedly to increase his coins, but after crossing 3 times, he has no coins left\\.\n\n*Question\\:* How many coins did Vahagn have before crossing the bridge\\?", options: ["20 coins", "30 coins", "35 coins", "40 coins"], correct: 2 },
-    
-    { text: "*Question 4:*\nThe mailman checks the mailbox at regular intervals and takes any letters if they are there\\. He checked the mailbox for the first time at 7\\:00 AM and the last time at 7\\:00 PM\\.\nIt is known that the intervals between checks are equal\\.\n\n*Question\\:* Find the duration of each interval if the mailman checked the mailbox 5 times during the day\\.", options: ["2 hours", "3 hours", "4 hours", "5 hours"], correct: 1 },
-    
-    { text: "*Question 5:*\nIn a lake, the number of flowers doubles every day\\.\nIf we place 1 flower in the lake initially, then after 16 days the lake will be completely covered with flowers\\.\n\n*How many days will it take for the lake to be completely covered if we start with 4 flowers instead\\?*", options: ["12 days", "13 days", "14 days", "15 days"], correct: 2 },
-    
-    { text: "*Question 6:*\nOn the island of Kusi, there live truth\\-tellers and liars\\. Truth\\-tellers always tell the truth, and liars always lie\\.\nTwo inhabitants are talking:\n\"One of us is a truth\\-teller\\.\"\n\"You are a liar\\.\"\nLater, a group of people were talking, and each said: \"Two of you are truth\\-tellers\\.\"\n\n*Question\\:*\n1\\. Who is the truth\\-teller among the two inhabitants\\?\n2\\. How many truth\\-tellers can be in the group\\?", options: ["First person; 3 truth-tellers", "First person; 2 truth-tellers", "Second person; 4 truth-tellers", "Both are truth-tellers; 3 truth-tellers"], correct: 0 },
-    
-    { text: "*Question 7:*\nIn a bus, the seats are single seats and double seats\\.\nIn the morning, the driver noticed that 13 passengers were seated so that 9 seats were completely empty\\.\nIn the evening, he noticed that only 6 seats were completely empty, although there were 10 passengers\\.\n\n*Question\\:* How many seats are there in the bus\\?", options: ["16", "17", "18", "19"], correct: 0 },
-    
-    { text: "*Question 8:*\nWhen threatened, a chameleon changes its color as follows\\:\nRed \\→ Blue\nBlue \\→ Orange\nOrange \\→ Red\nDuring a hunt, a red chameleon encountered danger 50 times\\.\n\n*Determine the color of the chameleon when it returned home\\.*", options: ["red", "blue", "orange", "Քամելիոնը ինչ ա՞"], correct: 2 },
-    
-    { text: "*Question 9:*\nHow many times do you need to write the number 10101 consecutively so that the resulting number is divisible by 9\\?", options: ["2 times", "3 times", "4 times", "5 times"], correct: 1 },
-    
-    { text: "*Question 10:*\nHow many two\\-digit numbers are there whose digits add up to 15\\?", options: ["10 times", "8 times", "6 times", "4 times"], correct: 3 },
+function formatScore(score) {
+    return Math.ceil(score * 2) / 2;
+}
+
+const HARD_QUESTIONS = [
+    { text: "*Question {{index}}:*\nOn the island of Kusi, there live truth\\-tellers and liars\\. Truth\\-tellers always tell the truth, and liars always lie\\.\nTwo inhabitants are talking:\n\"One of us is a truth\\-teller\\.\"\n\"You are a liar\\.\"\nLater, a group of people were talking, and each said: \"Two of you are truth\\-tellers\\.\"\n\n*Question\\:*\n1\\. Who is the truth\\-teller among the two inhabitants\\?\n2\\. How many truth\\-tellers can be in the group\\?", options: ["First person; 3 truth-tellers", "First person; 2 truth-tellers", "Second person; 4 truth-tellers", "Both are truth-tellers; 3 truth-tellers"], correct: 0 },
+    { text: "*Question {{index}}:*\nIn a bus, the seats are single seats and double seats\\.\nIn the morning, the driver noticed that 13 passengers were seated so that 9 seats were completely empty\\.\nIn the evening, he noticed that only 6 seats were completely empty, although there were 10 passengers\\.\n\n*Question\\:* How many seats are there in the bus\\?", options: ["16", "17", "18", "19"], correct: 0 },
+    { text: "*Question {{index}}:*\n14 boys are participating in a summer camp\\.\n\n*Details:*\n\\- 4 of them went with their 3 brothers each\n\\- 6 of them went with their 2 brothers each\n\\- 2 of them went with their 1 brother each\n\\- 2 of them have no brothers in the camp\n\n*How many families do the boys come from\\?*", options: ["14", "6", "4", "8"], correct: 1 },
 ];
+
+const EASY_QUESTIONS = [
+
+    { text: "*Question {{index}}:*\nOn the blackboard, 50 consecutive natural numbers are written, and it took exactly 110 digits to write them\\.\n\n*Which of the following sets of numbers could be written on the blackboard\\?*", options: ["50 - 100", "55 – 102", "55 - 101", "60–109"], correct: 3 },
+    
+    { text: "*Question {{index}}:*\nVahagn, while traveling, reached a magical bridge\\. The wizard who built the bridge said:\n\"Each time you cross the bridge, the number of coins you have will double, but after crossing, you must pay me 40 coins\\.\"\nVahagn decides to cross the bridge repeatedly to increase his coins, but after crossing 3 times, he has no coins left\\.\n\n*Question\\:* How many coins did Vahagn have before crossing the bridge\\?", options: ["20 coins", "30 coins", "35 coins", "40 coins"], correct: 2 },
+    
+    { text: "*Question {{index}}:*\nThe mailman checks the mailbox at regular intervals and takes any letters if they are there\\. He checked the mailbox for the first time at 7\\:00 AM and the last time at 7\\:00 PM\\.\nIt is known that the intervals between checks are equal\\.\n\n*Question\\:* Find the duration of each interval if the mailman checked the mailbox 5 times during the day\\.", options: ["2 hours", "3 hours", "4 hours", "5 hours"], correct: 1 },
+    
+    { text: "*Question {{index}}:*\nIn a lake, the number of flowers doubles every day\\.\nIf we place 1 flower in the lake initially, then after 16 days the lake will be completely covered with flowers\\.\n\n*How many days will it take for the lake to be completely covered if we start with 4 flowers instead\\?*", options: ["12 days", "13 days", "14 days", "15 days"], correct: 2 },
+    
+    { text: "*Question {{index}}:*\nWhen threatened, a chameleon changes its color as follows\\:\nRed \\→ Blue\nBlue \\→ Orange\nOrange \\→ Red\nDuring a hunt, a red chameleon encountered danger 50 times\\.\n\n*Determine the color of the chameleon when it returned home\\.*", options: ["red", "blue", "orange", "Քամելիոնը ինչ ա՞"], correct: 2 },
+    
+    { text: "*Question {{index}}:*\nHow many times do you need to write the number 10101 consecutively so that the resulting number is divisible by 9\\?", options: ["2 times", "3 times", "4 times", "5 times"], correct: 1 },
+    
+    { text: "*Question {{index}}:*\nHow many two\\-digit numbers are there which digits add up to 15\\?", options: ["10 times", "8 times", "6 times", "4 times"], correct: 3 },
+];
+
+function shuffleQuestionOptions(question) {
+    // Store the correct answer text before shuffling
+    const correctAnswerText = question.options[question.correct];
+
+    // Create a copy of the options array
+    const shuffledOptions = [...question.options];
+
+    // Fisher-Yates shuffle algorithm
+    for (let i = shuffledOptions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
+    }
+
+    // Find the new index of the correct answer
+    const newCorrectIndex = shuffledOptions.indexOf(correctAnswerText);
+
+    // Return a new question object with shuffled options
+    return {
+        ...question,
+        options: shuffledOptions,
+        correct: newCorrectIndex
+    };
+}
 
 const sessions = new Map();
 const completedUsers = new Set(); // Track users who have finished
@@ -60,8 +89,21 @@ function getUserInfo(ctx) {
     };
 }
 
+const getRandomQuestions = (questions, count) => {
+    const copyQuestions = [...questions];
+    const selected = [];
+    while (selected.length < count && copyQuestions.length > 0) {
+        const randomIndex = Math.floor(Math.random() * copyQuestions.length);
+        const question = copyQuestions.splice(randomIndex, 1)[0];
+        selected.push(shuffleQuestionOptions(question));
+    }
+    return selected;
+}
+
 function startNewSession(userId) {
-    sessions.set(userId, { i: 0, score: 0, answered: false, locked: false });
+    const hardQuestions = getRandomQuestions(HARD_QUESTIONS, 2);
+    const easyQuestions = getRandomQuestions(EASY_QUESTIONS, 3);
+    sessions.set(userId, { i: 0, score: 0, questions: [...easyQuestions, ...hardQuestions], answered: false, locked: false });
     logEvent('info', 'SESSION_STARTED', {
         userId,
         activeSessions: sessions.size,
@@ -93,9 +135,8 @@ function hasUserCompleted(userId) {
     return completedUsers.has(userId);
 }
 
-function questionKeyboard(qIndex) {
-    const q = QUESTIONS[qIndex];
-    const buttons = q.options.map((opt, idx) => 
+function questionKeyboard(qIndex, q) {
+    const buttons = q.options.map((opt, idx) =>
         Markup.button.callback(
             `${String.fromCharCode(65 + idx)}. ${opt}`,  // Plain text - NO escaping!
             `ans:${qIndex}:${idx}`
@@ -106,11 +147,13 @@ function questionKeyboard(qIndex) {
 
 
 async function sendQuestion(ctx, qIndex) {
-    const q = QUESTIONS[qIndex];
+    const userId = ctx.from.id;
+    const session = getSession(userId);
+    const q = session.questions[qIndex];
     try {
         await ctx.reply(
-            q.text,
-            { parse_mode: "MarkdownV2", ...questionKeyboard(qIndex), disable_web_page_preview: true }
+            q.text.replace('{{index}}', qIndex + 1),
+            { parse_mode: "MarkdownV2", ...questionKeyboard(qIndex, q), disable_web_page_preview: true }
         );
     } catch (err) {
         logEvent('error', 'QUESTION_SEND_FAILED', {
@@ -126,7 +169,7 @@ bot.start(async (ctx) => {
     const userInfo = getUserInfo(ctx);
     try {
         await ctx.reply(
-            `Welcome! You'll get 10 questions. Pass at 8/10.\n\nPress Start when ready.`,
+            `Welcome! You'll get 10 questions. Pass at 7/10.\n\nPress Start when ready.`,
             Markup.inlineKeyboard([Markup.button.callback("Start quiz ▶️", "start_quiz")])
         );
         logEvent('info', 'BOT_START', userInfo);
@@ -207,14 +250,21 @@ bot.on("callback_query", async (ctx, next) => {
 
         session.locked = true;
 
-        const correct = QUESTIONS[qIndex].correct === choice;
-        if (correct) session.score += 1;
+        const question = session.questions[qIndex];
+        const correct = question.correct === choice;
+        if (correct) {
+            if (qIndex >= 3) {
+                session.score += 3;
+            } else {
+                session.score += 1.33;
+            }
+        }
 
         await ctx.answerCbQuery({ text: correct ? "✅ Correct" : "❌ Incorrect" });
 
         // Remove the keyboard from the answered question
         try {
-            const q = QUESTIONS[qIndex];
+            const q = session.questions[qIndex];
             const answerEmoji = correct ? "✅" : "❌";
             const userAnswer = String.fromCharCode(65 + choice);
             await ctx.editMessageText(
@@ -229,7 +279,7 @@ bot.on("callback_query", async (ctx, next) => {
         session.i += 1;
         session.locked = false;
 
-        if (session.i >= QUESTIONS.length) {
+        if (session.i >= session.questions.length) {
             const score = session.score;
             const passed = score >= PASS_THRESHOLD;
             const now = new Date();
@@ -240,12 +290,12 @@ bot.on("callback_query", async (ctx, next) => {
 
             if (passed) {
                 await ctx.reply(
-                    `🎉 Congratulations, you won a prize!\n\nWinner: ${userTag}\nScore: ${score}/10\nTime: ${now.toLocaleString()}`,
+                    `🎉 Congratulations, you won a prize!\n\nWinner: ${userTag}\nScore: ${formatScore(score)}/10\nTime: ${now.toLocaleString()}`,
                     { protect_content: true }
                 );
                 await ctx.reply("Please show this message to the staff to claim your prize.", { protect_content: true });
             } else {
-                await ctx.reply(`Thanks for participating! Your score: ${score}/10.`);
+                await ctx.reply(`Thanks for participating! Your score: ${formatScore(score)}/10.`);
             }
         } else {
             await sendQuestion(ctx, session.i);
