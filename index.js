@@ -83,9 +83,13 @@ function hasUserCompleted(userId) {
     return completedUsers.has(userId);
 }
 
+function escapeMarkdownV2(text) {
+    return text.replace(/([_*\[\]()~`>#+\-=|{}.!\\])/g, '\\$1');
+}
+
 function questionKeyboard(qIndex) {
     const q = QUESTIONS[qIndex];
-    const buttons = q.options.map((opt, idx) => Markup.button.callback(`${String.fromCharCode(65 + idx)}. ${opt}`, `ans:${qIndex}:${idx}`));
+    const buttons = q.options.map((opt, idx) => Markup.button.callback(escapeMarkdownV2(`${String.fromCharCode(65 + idx)}. ${opt}`), `ans:${qIndex}:${idx}`));
     return Markup.inlineKeyboard(buttons.map(b => [b]));
 }
 
