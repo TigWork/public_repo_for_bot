@@ -30,6 +30,11 @@ const EASY_QUESTIONS = [
     { text: "*Question {{index}}:*\nHow many times do you need to write the number 10101 consecutively so that the resulting number is divisible by 9\\?", options: ["2 times", "3 times", "4 times", "5 times"], correct: 1 },
     
     { text: "*Question {{index}}:*\nHow many two\\-digit numbers are there which digits add up to 15\\?", options: ["10 times", "8 times", "6 times", "4 times"], correct: 3 },
+    { text: "*Question {{index}}:*\nAshot wrote down all the numbers from 1 to 500 on a piece of paper, then counted how many times the digit 1 appears there\\.\n\n*What number did he get\\?*", options: ["200 times", "250 times", "300 times", "350 times"], correct: 0 },
+    { text: "*Question {{index}}:*\nEdgar bought one notebook that costs 150 drams and several pens that each cost 40 drams\\.\nIf he spent a total of 310 drams, find how many pens he bought\\.", options: ["3", "4", "5", "6"], correct: 1 },
+    { text: "*Question {{index}}:*\nThe father is 7 times older than his son, and the son is 24 years younger than his father\\.\n\n*Find the father's age\\.*", options: ["21", "24", "28", "35"], correct: 1 },
+    { text: "*Question {{index}}:*\nThere are 525 people in a theater\\. The number of men is 2 times the number of children, and the number of women is 10 more than the number of men\\.\n\n*Find how many children are in the theater\\.*", options: ["72", "87", "98", "103"], correct: 3 },
+    { text: "*Question {{index}}:*\nDuring PE class, the 25 students of a class are standing in a line\\.\nEach student is either truthful \\(always tells the truth\\) or a liar \\(always lies\\)\\.\nTruthful Grigor is standing in the 13th position\\.\nEveryone except Grigor said\\:\n\"Between me and Grigor, there are exactly 6 liars\\.\"\n\n*How many liars are there in the line\\?*", options: ["9", "10", "11", "12"], correct: 3 }
 ];
 
 function shuffleQuestionOptions(question) {
@@ -268,7 +273,7 @@ bot.on("callback_query", async (ctx, next) => {
             const answerEmoji = correct ? "✅" : "❌";
             const userAnswer = String.fromCharCode(65 + choice);
             await ctx.editMessageText(
-                `Q${qIndex + 1}/5\n\n${q.text}\n\n${answerEmoji} Your answer: ${userAnswer}`,
+                `Q${qIndex + 1}/5\n\n${q.text.replace('{{index}}', qIndex + 1)}\n\n${answerEmoji} Your answer: ${userAnswer}`,
                 { parse_mode: "MarkdownV2" }  // Add this!
             );
         } catch (editErr) {
