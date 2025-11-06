@@ -83,13 +83,14 @@ function hasUserCompleted(userId) {
     return completedUsers.has(userId);
 }
 
-function escapeMarkdownV2(text) {
-    return text.replace(/([_*\[\]()~`>#+\-=|{}.!\\])/g, '\\$1');
-}
-
 function questionKeyboard(qIndex) {
     const q = QUESTIONS[qIndex];
-    const buttons = q.options.map((opt, idx) => Markup.button.callback(escapeMarkdownV2(`${String.fromCharCode(65 + idx)}. ${opt}`), `ans:${qIndex}:${idx}`));
+    const buttons = q.options.map((opt, idx) => 
+        Markup.button.callback(
+            `${String.fromCharCode(65 + idx)}. ${opt}`,  // Plain text - NO escaping!
+            `ans:${qIndex}:${idx}`
+        )
+    );
     return Markup.inlineKeyboard(buttons.map(b => [b]));
 }
 
@@ -130,11 +131,10 @@ bot.start(async (ctx) => {
 
 
 bot.action("start_quiz", async (ctx) => {
+    const userId = ctx.from.id;
+    const userInfo = getUserInfo(ctx);
     try {
-        const userId = ctx.from.id;
         await ctx.answerCbQuery();
-        const userInfo = getUserInfo(ctx);
-
 
         if (hasUserCompleted(userId)) {
             logEvent('warn', 'RETAKE_ATTEMPT_BLOCKED', userInfo);
@@ -208,7 +208,8 @@ bot.on("callback_query", async (ctx, next) => {
             const answerEmoji = correct ? "✅" : "❌";
             const userAnswer = String.fromCharCode(65 + choice);
             await ctx.editMessageText(
-                `Q${qIndex + 1}/10\n\n${q.text}\n\n${answerEmoji} Your answer: ${userAnswer}`
+                `Q${qIndex + 1}/10\n\n${q.text}\n\n${answerEmoji} Your answer: ${userAnswer}`,
+                { parse_mode: "MarkdownV2" }  // Add this!
             );
         } catch (editErr) {
             // Message might be too old to edit or deleted
