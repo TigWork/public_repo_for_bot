@@ -169,7 +169,7 @@ bot.start(async (ctx) => {
     const userInfo = getUserInfo(ctx);
     try {
         await ctx.reply(
-            `Welcome! You'll get 10 questions. Pass at 7/10.\n\nPress Start when ready.`,
+            `Welcome! You'll get 5 questions. Pass at 7/10 points.\n\nPress Start when ready.`,
             Markup.inlineKeyboard([Markup.button.callback("Start quiz ▶️", "start_quiz")])
         );
         logEvent('info', 'BOT_START', userInfo);
@@ -268,7 +268,7 @@ bot.on("callback_query", async (ctx, next) => {
             const answerEmoji = correct ? "✅" : "❌";
             const userAnswer = String.fromCharCode(65 + choice);
             await ctx.editMessageText(
-                `Q${qIndex + 1}/10\n\n${q.text}\n\n${answerEmoji} Your answer: ${userAnswer}`,
+                `Q${qIndex + 1}/5\n\n${q.text}\n\n${answerEmoji} Your answer: ${userAnswer}`,
                 { parse_mode: "MarkdownV2" }  // Add this!
             );
         } catch (editErr) {
