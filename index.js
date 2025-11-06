@@ -1,6 +1,6 @@
 const { Telegraf, Markup } = require("telegraf");
 
-const bot = new Telegraf('8214158495:AAE-SiE1TjLSM5P-4q95hJhfK65Gq44miWg');
+const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
 const PASS_THRESHOLD = 8;
 
